@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Backend origin URL, defaults to localhost if not set in env variables
-export const BACKEND_ORIGIN = process.env.BACKEND_ORIGIN ? `${process.env.BACKEND_ORIGIN}/api/${process.env.API_VERSION}` : "http://localhost:5000/api/v1";
+// Backend origin URL, defaults to localhost if not set in env variables 
+export const BACKEND_ORIGIN = typeof window === "undefined" ? (process.env.BACKEND_ORIGIN ? `${process.env.BACKEND_ORIGIN}/api/${process.env.API_VERSION ?? "v1"}` : "http://localhost:5000/api/v1") : "/api/v1";
 // Frontend origin URL, defaults to localhost if not set in env variables
 export const FRONTEND_ORIGIN = process.env.NEXT_PUBLIC_FRONTEND_ORIGIN || "http://localhost:3000";
 
