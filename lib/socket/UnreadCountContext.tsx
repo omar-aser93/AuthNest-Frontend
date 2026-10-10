@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 import { useSocket } from "@/lib/socket/socketProvider";
 import { useAuth } from "@/lib/authProvider/AuthProviderClient";
 import type { Message } from "@/lib/hooks/useChat";
+import { apiFetch } from "../api";
 
 // Typescript types for UnreadContext
 type UnreadContextType = {
@@ -52,8 +53,8 @@ export const UnreadCountProvider = ({ children }: { children: React.ReactNode })
     // function for initial fetch of unread counts from the DB
     const fetchUnread = async () => {
       try {
-        // API call to fetch unread counts from the backend
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/v1/chat/unread`, { credentials: "include" });
+        // API call to fetch unread counts from the backend 
+        const res = await apiFetch(`/api/v1/chat/unread`);
         if (res.ok) {
           const data = await res.json();            // parse the response
           setUnreadMap(data.unreadMap);             // update the unread map

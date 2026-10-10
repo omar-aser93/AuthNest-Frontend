@@ -26,12 +26,10 @@ const nextConfig: NextConfig = {
   },
 
   // ───────────────────────────────────────────────────────────────────────────
-  // PROXY: forward /api/v1/* from the browser to the real backend.
+  // PROXY: forward /api/v1/* from the browser to the real backend. (fixes CORS issues on deployment)
   // The browser never sees the backend URL — everything looks same-origin.
-  // - Server-side apiFetch calls (server actions, proxy.ts) still hit
-  //   BACKEND_ORIGIN directly; they don't go through this rewrite.
-  // - BACKEND_ORIGIN is read from env at build time. On Vercel, set it in
-  //   Project → Settings → Environment Variables (no NEXT_PUBLIC_ prefix).
+  // - Server-side apiFetch calls (server actions, proxy.ts) still hit BACKEND_ORIGIN directly; they don't go through this rewrite.
+  // - BACKEND_ORIGIN is read from env at build time. On Vercel, set it in Project → Settings → Environment Variables (no NEXT_PUBLIC_ prefix).
   // ───────────────────────────────────────────────────────────────────────────
   async rewrites() {
     return [

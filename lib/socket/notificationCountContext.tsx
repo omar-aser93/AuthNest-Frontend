@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useSocket } from "@/lib/socket/socketProvider";
 import { getUnreadNotificationsCount } from "@/lib/queries/notificationQueries";
+import { useAuth } from "../authProvider/AuthProviderClient";
 
 // Typescript types for NotificationCountContext
 type NotificationCountContextType = {
@@ -29,12 +30,14 @@ export const useNotificationCount = () => {
 export const NotificationCountProvider = ({ children }: { children: React.ReactNode }) => {
   const [count, setCount] = useState(0);              // State to hold the count
   const { socketRef, isConnected } = useSocket();     // Get socket instance
+  const { user } = useAuth();                         // Get current user
 
   // ✅ Shared refresh count function – can be called from anywhere
   const refreshCount = useCallback(async () => {
+    if (!user) return;                                 // don't fetch when logged out
     const res = await getUnreadNotificationsCount();
     setCount(res.count ?? 0);
-  }, []);
+  }, [user]);
 
   // increment count function, it increments the count state
   const incrementCount = useCallback(() => {
@@ -43,22 +46,23 @@ export const NotificationCountProvider = ({ children }: { children: React.ReactN
 
 
  // Initial fetch  
-  useEffect(() => {
-    let isMounted = true;     // Flag to check if component is mounted
+  useEffect(() => {    
+    let isMounted = true;                 // Flag to check if component is mounted
     (async () => {
+      // reset on logout — now inside async, not sync
+      if (!user) { if (isMounted) setCount(0); return; }
       const res = await getUnreadNotificationsCount();    // Fetch unread notifications count
       if (isMounted) setCount(res.count ?? 0);            // Set count if component is still mounted
     })();
     return () => { isMounted = false; };                  // Cleanup on unmount
-  }, []); // runs once on mount
+  }, [user]); // runs once on mount
 
   // Socket listener – increments count on new notification
   useEffect(() => {
-    const socket = socketRef.current;           // Get socket instance from the ref
-    if (!socket || !isConnected) return;        // If not connected, do not listen
-    const handler = incrementCount;             // Handler function
-    socket.on("new_notification", handler);     // Listen for new_notification event
-    return () => { socket.off("new_notification", handler) };   // Cleanup on unmount
+    const socket = socketRef.current;                 // Get socket instance from the ref
+    if (!socket || !isConnected) return;              // If not connected, do not listen    
+    socket.on("new_notification", incrementCount);    // Listen for new_notification event
+    return () => { socket.off("new_notification", incrementCount) };   // Cleanup on unmount
   }, [socketRef, isConnected, incrementCount]);
 
   return (
