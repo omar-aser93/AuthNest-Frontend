@@ -73,7 +73,7 @@ export default function CommentForm({ postId, parentId, commentToEdit, onSuccess
         <div className="flex gap-3">
           {/* User Avatar */}
           <Avatar className="w-8 h-8 mt-1">
-            <AvatarImage src={user?.image} />
+            <AvatarImage src={user?.image ?? undefined} />
             <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 relative">
