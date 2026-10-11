@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const cookieOpts = {
     httpOnly: true,
     secure: isProd,
-    sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+    sameSite: "lax" as const,
     path: "/",
   };
   const cookieStore = await cookies();

@@ -34,7 +34,7 @@ export async function registerAction(formData: RegisterType) {
     cookieStore.set("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: "lax",
       path: "/",
       maxAge: 15 * 60,      // 15 minutes
     });
@@ -42,7 +42,7 @@ export async function registerAction(formData: RegisterType) {
     cookieStore.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60     // 7 days
     });
@@ -74,7 +74,7 @@ export async function loginAction(formData: LoginType) {
     cookieStore.set("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: "lax",
       path: "/",
       maxAge: 15 * 60,      // 15 minutes
     });
@@ -82,7 +82,7 @@ export async function loginAction(formData: LoginType) {
     cookieStore.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: "lax",
       path: "/",
       maxAge: parsed.data.remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60     // 7 or 30 days
     });
@@ -220,7 +220,7 @@ export async function loadCsrf(): Promise<string | null> {
   cookieStore.set("csrfToken", data.csrfToken, {
     httpOnly: false,                                              // must be readable by JS for double-submit pattern
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: "lax",
     path: "/",
     maxAge: 30 * 24 * 60 * 60,                                  // 30 days to match refresh token
   });

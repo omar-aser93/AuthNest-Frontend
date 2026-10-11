@@ -444,11 +444,11 @@ async function throwApiError(response: Response): Promise<never> {
 // // accessToken: httpOnly FALSE — must be JS-readable for Bearer header attachment
 // // cookieStore.set("accessToken", accessToken, {
 // //   httpOnly: false,  // ← only this changes
-// //   secure: isProd, sameSite, path: "/", maxAge: 15 * 60,
+// //   secure: isProd, sameSite: "lax", path: "/", maxAge: 15 * 60,
 // // });
 // // refreshToken: stays httpOnly — backend will set this via Set-Cookie anyway, but since signup/login return it in body too, set it here for consistency
 // // cookieStore.set("refreshToken", refreshToken, {
-// //   httpOnly: true, secure: isProd, sameSite, path: "/", maxAge: 7 * 24 * 60 * 60,
+// //   httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: 7 * 24 * 60 * 60,
 // // });
 // // NEW: return accessToken so the client component can call setAccessToken()
 // // return { success: true, callbackUrl: formData.callbackUrl || "/", accessToken };

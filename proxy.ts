@@ -21,12 +21,11 @@ const PROTECTED_DYNAMIC = [
 
 
 const isProd = process.env.NODE_ENV === "production";             // check if we are in production
-const sameSite = isProd ? ("none" as const) : ("lax" as const);   // "none" for prod, "lax" for dev
 // Function to set session cookies
 function setSessionCookies(res: NextResponse, d: { accessToken: string; refreshToken: string; csrfToken: string; refreshExpiryDays: number }) {
-  res.cookies.set("accessToken", d.accessToken, { httpOnly: true, secure: isProd, sameSite, path: "/", maxAge: 15 * 60 });
-  res.cookies.set("refreshToken", d.refreshToken, { httpOnly: true, secure: isProd, sameSite, path: "/", maxAge: d.refreshExpiryDays * 86400 });
-  res.cookies.set("csrfToken", d.csrfToken, { httpOnly: false, secure: isProd, sameSite, path: "/", maxAge: 30 * 86400 });
+  res.cookies.set("accessToken", d.accessToken, { httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: 15 * 60 });
+  res.cookies.set("refreshToken", d.refreshToken, { httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: d.refreshExpiryDays * 86400 });
+  res.cookies.set("csrfToken", d.csrfToken, { httpOnly: false, secure: isProd, sameSite: "lax", path: "/", maxAge: 30 * 86400 });
 }
 // Function to Clear all session cookies
 function clearSessionCookies(res: NextResponse) {["accessToken", "refreshToken", "csrfToken"].forEach((c) => res.cookies.delete(c))}
