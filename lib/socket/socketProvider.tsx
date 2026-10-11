@@ -39,8 +39,16 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       autoConnect: false,
       // Called on every (re)connect attempt — always fresh
       auth: (cb) => {
-        fetch("/api/socket-token", { cache: "no-store" })
-          .then((r) => (r.ok ? r.json() : { token: null }))
+        const fetchToken = () => fetch("/api/socket-token", { cache: "no-store" });
+        fetchToken()
+          .then(async (r) => {
+            if (r.status !== 401) return r;
+            // Access cookie expired — refresh once, then retry.
+            const refreshed = await fetch("/api/v1/auth/refresh-token", { method: "POST", cache: "no-store" });
+            if (!refreshed.ok) return null;
+            return fetchToken();
+          })
+          .then((r) => (r && r.ok ? r.json() : { token: null }))
           .then((d) => cb({ token: d.token ?? undefined }))
           .catch(() => cb({ token: undefined }));
       },
