@@ -29,17 +29,41 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   
   // useEffect to initialize socket connection on mount and clean up on unmount, also re-run when user ID changes (login/logout)
   useEffect(() => {
-    if (!user?.id) return;           // If user is not logged in, do not connect to socket, return early
+    if (!user?.id) return;          // If user is not logged in, do not connect to socket, return early
    
-    // Initialize socket connection with backend origin from env variables, also send cookies for authentication (withCredentials: true)
-    const socket = io(process.env.NEXT_PUBLIC_BACKEND_ORIGIN!, { withCredentials: true });
-    // (alternative) if using token-based auth instead of cookie-based (mobile apps, etc), you can send the stored token in the auth payload directly (no withCredentials needed)
-    //const socket = io(BACKEND_URL, { auth: { token: accessToken } });  
+    let cancelled = false;          // flag to check if the effect has been cancelled
+    let retries = 0;                // counter for retries
+
+    // Initialize socket connection with backend origin from env variables, set autoConnect to false, as we'll connect when we get the token 
+    const socket = io(process.env.NEXT_PUBLIC_BACKEND_ORIGIN!, {
+      autoConnect: false,
+      // Called on every (re)connect attempt — always fresh
+      auth: (cb) => {
+        fetch("/api/socket-token", { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : { token: null }))
+          .then((d) => cb({ token: d.token ?? undefined }))
+          .catch(() => cb({ token: undefined }));
+      },
+    });
     socketRef.current = socket;    // Store socket instance in the ref
 
+  
     // ─── Set the Connection states  ─────────────────────────────────────────
-    socket.on("connect", () => setIsConnected(true));
+    socket.on("connect", () => { retries = 0; setIsConnected(true); });
     socket.on("disconnect", () => setIsConnected(false));
+
+    // ─── Retry connection on error  ────────────────────────────────────────
+    socket.on("connect_error", async (err) => {
+      // Do not retry permanent failures
+      if (err.message === "Your account has been suspended") return;
+      if (err.message === "User not found") return;
+      // Cap retries
+      if (retries++ >= 3) return;
+      // Backoff before retrying
+      await new Promise((r) => setTimeout(r, 1000 * retries));
+      if (cancelled) return;
+      socket.connect();
+    });
 
     // ─── listener for initial online users  ─────────────────────────────────
     socket.on("online_users", ({ users }: { users: string[] }) => {
@@ -75,10 +99,14 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       socket.emit("leave_conversation", { conversationId });
     });
 
+    socket.connect();                 // Connect socket
+
     // ─── Cleanup on unmount ─────────────────────────────────────────────────────────────
     return () => {
+      cancelled = true;
       socket.off("connect");
       socket.off("disconnect");
+      socket.off("connect_error");
       socket.off("online_users");
       socket.off("user_online");
       socket.off("user_offline");
