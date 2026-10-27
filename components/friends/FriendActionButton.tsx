@@ -90,7 +90,7 @@ export default function FriendActionButton({ targetUserId, initialStatus }:
       if (res.error) {
         toast.error(res.error);
       } else {        
-        setStatus({ status: "BLOCKED", friendshipId: res.friendship?.id });
+        setStatus({ status: "BLOCKED", friendshipId: res.friendship?.id, direction: "sent" });
         toast.success("User blocked");
       }
     });
@@ -206,6 +206,9 @@ export default function FriendActionButton({ targetUserId, initialStatus }:
 
   // If status is BLOCKED, show "Blocked" button with "unblock" dropdown option
   if (status.status === "BLOCKED") {
+    if (status.direction !== "sent") {
+      return ( <Button variant="outline" size="sm" disabled> <Ban className="mr-2 h-4 w-4" /> Unavailable </Button> );
+    }
     return (
       <div className="flex items-center">
         <Button variant="outline" size="sm" disabled={isPending} className="cursor-pointer">
