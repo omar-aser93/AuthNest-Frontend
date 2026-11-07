@@ -29,7 +29,7 @@ type PostFormValues = {
 export default function CreatePostForm({ post }: { post?: PostType | null }) {
 
   const isUpdate = Boolean(post);         // Variable to check if we are updating the post or creating a new one
-  const isSharedPost = Boolean(post?.originalPost);   // Variable to check if we are updating a shared post
+  const isSharedPost = Boolean(post?.isShared || post?.originalPost);   // Variable to check if we are updating a shared post
 
   const [preview, setPreview] = useState<string | null>(post?.image || null );  // state for image preview
   // states for custom privacy allowed/blocked users ids

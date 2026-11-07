@@ -42,11 +42,7 @@ export async function createPostAction(formData: FormData) {
 
 // ---------- UPDATE POST Server-Action ----------
 export async function updatePostAction(formData: FormData, postId: string) {
-  // 1. validate data with Zod, because of img upload, we extract (title, content, ...) as formData instead of passing JSON directly
-  const parsed = createPostSchema.safeParse(
-    { title: formData.get("title"), content: formData.get("content"), privacy: formData.get("privacy"), taggedUsers: formData.getAll("taggedUsers[]"), allowed: formData.getAll("allowed[]"), blocked: formData.getAll("blocked[]") }
-  );
-  if (!parsed.success) { return { error: z.flattenError(parsed.error) }; }
+  // 1. No validation here: the form validates client-side and the backend validates again (updatePostSchema).. we use differant schema for update a shared post, so validation can cause errors here
 
   // 2. send the data to backend (API call) - no (JSON.stringify), because we are sending (img) FormData, not JSON object 
   try {
