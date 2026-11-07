@@ -107,6 +107,19 @@ export const shareSchema = z.object({
 export type ShareInput = z.infer<typeof shareSchema>;
 
 
+// updateSharedPostSchema: Same shape as createPostSchema but relaxed for shared posts
+export const updateSharedPostSchema = z.object({
+  title: z.string().optional().or(z.literal('')),
+  content: z.string().max(300, 'Message cannot exceed 300 characters').optional().or(z.literal('')),
+  image: z.any().optional(),
+  taggedUsers: z.array(z.string()).optional(),
+  privacy: z.enum(['PUBLIC', 'FRIENDS', 'ONLY_ME']),   // no CUSTOM — backend rejects
+  allowed: z.array(z.string()).optional().default([]),
+  blocked: z.array(z.string()).optional().default([]),
+});
+export type UpdateSharedPostType = z.infer<typeof updateSharedPostSchema>;
+
+
 // --------------- REPORT -------------------
 export const reportSchema = z.object({
   targetType: z.enum(["POST", "COMMENT", "USER"]),
