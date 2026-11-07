@@ -82,7 +82,7 @@ export default async function UserPage({ params, searchParams }: { params: Promi
               {user.bio && (<p className="mt-1 text-gray-600 max-w-xl"> {user.bio} </p>)}
               <p className="mt-2 text-sm text-gray-500"> Member since {new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long"})} </p>
             </div>            
-            {/* Message (chat) Button + Friend Request Button */}
+            {/* Message (chat) Button + Friend Request Button + User Report Button */}
             <div className="flex items-center gap-2">
               <MessageButton targetUserId={userId} />
               <FriendActionButton targetUserId={userId} initialStatus={friendshipStatus} />
