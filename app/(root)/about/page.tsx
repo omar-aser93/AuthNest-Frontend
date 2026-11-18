@@ -49,6 +49,7 @@ export default function AboutPage() {
           <p className="text-muted-foreground">
             Full-featured admin dashboard to manage users, view chats, and moderate content efficiently.
           </p>
+          <Link href="/privacy">Check out our Privacy Policy</Link>
         </div>
       </section>
 
