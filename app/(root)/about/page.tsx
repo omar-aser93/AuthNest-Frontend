@@ -24,6 +24,7 @@ export default function AboutPage() {
             AuthNest is a modern full-stack authentication and support platform, designed to simplify user management and provide seamless experiences for admins and users alike.
           </p>
           <Button className="bg-primary text-white hover:bg-primary/90"><Link href="/login">Get Started</Link></Button>
+          <Link href="/privacy">Check out our Privacy Policy</Link>
         </div>
         <div className="flex-1 relative w-full h-64 md:h-80">
           <Image src="/auth-illustration.png" alt="AuthNest illustration" fill className="object-contain" />
@@ -48,8 +49,7 @@ export default function AboutPage() {
           <h3 className="text-xl font-semibold mb-2">Admin Dashboard</h3>
           <p className="text-muted-foreground">
             Full-featured admin dashboard to manage users, view chats, and moderate content efficiently.
-          </p>
-          <Link href="/privacy">Check out our Privacy Policy</Link>
+          </p>          
         </div>
       </section>
 
